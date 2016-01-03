@@ -1,0 +1,15 @@
+bin
+bist
+ist
+sind
+seid
+habe
+hast
+hat
+haben
+habt
+werde
+wirst
+wird
+werden
+werdet
