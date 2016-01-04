@@ -18,7 +18,7 @@ public class Prog {
 			System.out.println("----------------------------------------------------------------\n");
 		}
 		
-//		analyzer.startGuessing();
+		analyzer.startGuessing();
 
 	}
 	

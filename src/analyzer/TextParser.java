@@ -10,7 +10,7 @@ import java.nio.charset.Charset;
 
 public class TextParser {
 	
-	private String punctuations = ".,;:?!»„-";
+	private String punctuations = ".,;:?!��-�()[]{}";
 //	private String alphaSpec = "äöüÄÖÜß";
 	
 	public TextObject parse(File f){
@@ -31,6 +31,9 @@ public class TextParser {
 					}
 					if(punctuations.indexOf(c) != -1){
 						ret.addWord(c + "");
+					}
+					if(Character.isDigit(c)){
+						dummy += c;
 					}
 				}
 			}

@@ -1,0 +1,7 @@
+sekunde
+minute
+stunde
+tag
+woche
+monat
+jahr
