@@ -41,7 +41,19 @@ public class TextParser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
-		
+		calcVocab(ret);
 		return ret;
+	}
+	
+	private void calcVocab(TextObject to){
+		double totalWords = 0, vocabs = 0;
+		for(String k : to.getWordCount().keySet()){
+			if(k.length() > 1){
+				vocabs++;
+				totalWords += to.getWordCount().get(k);
+			}
+		}
+		to.setTextSize(totalWords);
+		to.setMyVocabVal(vocabs/totalWords);
 	}
 }

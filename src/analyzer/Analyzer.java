@@ -9,6 +9,7 @@ public class Analyzer {
 	private String dictPath = "dicts/";
 	private String sourcePath = "textSources/";
 	private String trainingPath = "Training/";
+	private String guessingPath = "Test/";
 	
 	private List<DictType> wordTypes;
 	private HashMap<String, TextClass> textClasses;
@@ -48,15 +49,38 @@ public class Analyzer {
 		}
 	}
 	
-	public void analyzeText(File f){
+	public boolean analyzeText(File f, String tClass){
 		TextObject in = parser.parse(f);
+		analyzeTypes(in);
 		String result = guessText(in);
-		System.out.println("");
+		
+		if(result.equals(tClass)){
+			System.out.println(tClass + " : " + result + "\tYEAH, got it RIGHT");
+			return true;
+		}else{
+			System.out.println(tClass + " : " + result + "\tDAMN!!!, got it WRONG");
+			return false;
+		}
 	}
 	
 	private String guessText(TextObject in) {
+		String tempRet = "";
+		double minDiff = 100;
+		for(TextClass TC : this.textClasses.values()){
+			double tempDiff = 0;
+			for(String type : in.getTypeCount().keySet()){
+				tempDiff += ((100/TC.getAverageTypeCount().get(type)) * 
+						Math.abs(TC.getAverageTypeCount().get(type) - 
+								in.getTypeCount().get(type)));
+			}
+			tempDiff /= in.getTypeCount().keySet().size();
+			if(tempDiff < minDiff){
+				minDiff = tempDiff;
+				tempRet = TC.getName();
+			}
+		}
 		
-		return null;
+		return tempRet;
 	}
 
 	public void init(){
@@ -69,7 +93,7 @@ public class Analyzer {
 		
 		File sourceDir = new File(sourcePath);
 		for(File f : sourceDir.listFiles()){
-			System.out.println(f.getAbsolutePath());
+//			System.out.println(f.getAbsolutePath());
 			textClasses.put(f.getName(), new TextClass(f.getName()));
 		}
 		
@@ -120,5 +144,32 @@ public class Analyzer {
 				learnText(f, TC.getName());
 			}
 		}
+	}
+	
+	public void startGuessing(){
+		HashMap<String, Double> results = new HashMap<String, Double>();
+		double ct = 0, rt = 0;//count total & guessed right total
+		for(TextClass TC : this.textClasses.values()){
+			double c = 0, r = 0;//count per class & guessed right per class
+			File tPath = new File(sourcePath + TC.getName() + "/" + guessingPath);
+			for(File f : tPath.listFiles(textFilter)){
+				if(analyzeText(f, TC.getName())){
+					c++;
+					r++;
+				}else{
+					c++;
+				}
+			}
+			ct += c;
+			rt += r;
+			results.put(TC.getName(), (r/c)*100.0);
+		}
+		String resMessage = "My guessing-results:\n";
+		resMessage += "--------------------------------\n";
+		for(String k : results.keySet()){
+			resMessage += k + ":\t" + results.get(k) + "%\n";
+		}
+		resMessage += "Overall Quote:\t" + (rt/ct)*100 + "%";
+		System.out.println(resMessage);
 	}
 }

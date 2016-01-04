@@ -14,6 +14,8 @@ public class Prog {
 			System.out.println("--------------------------------\n");
 			System.out.println(TC);
 		}
+		
+		analyzer.startGuessing();
 
 	}
 	
