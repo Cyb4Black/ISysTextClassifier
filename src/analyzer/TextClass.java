@@ -1,5 +1,10 @@
 package analyzer;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -79,9 +84,11 @@ public class TextClass {
 	}
 	
 	public void addTypeCount(HashMap<String, Double> newTypeCount) {
+//		System.out.println(newTypeCount);
 		for(String key : newTypeCount.keySet()){
 			if(typeCount.containsKey(key)){
 				double newVal = typeCount.get(key) + newTypeCount.get(key);
+//				System.out.println(newVal);
 				typeCount.put(key, newVal);
 			}else{
 				typeCount.put(key, newTypeCount.get(key));
@@ -130,7 +137,28 @@ public class TextClass {
 	public void setTopWords() {
 		topWords = new LinkedList<Map.Entry<String, Double>>();
 		LinkedList<Map.Entry<String, Double>> tempTop = new LinkedList<Map.Entry<String, Double>>();
-		tempTop.addAll(this.wordCount.entrySet());
+		LinkedList<String> blacklist = new LinkedList<String>();
+		
+		try {
+			InputStream is = new FileInputStream("C:/Users/Hex-3-En/offlineWorkspaces/offline WS ISys/ISysTextClassifier/src/topWordsBlackList.txt");
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader reader = new BufferedReader(isr);
+			String line = "";
+			while(((line = reader.readLine()) != null)){
+				blacklist.add(line);
+			}
+			reader.close();
+			isr.close();
+			is.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		for(Map.Entry<String, Double> ent : wordCount.entrySet()){
+			if(!blacklist.contains(ent.getKey())){
+				tempTop.add(ent);
+			}
+		}
 		tempTop.sort(new WordMapComp());
 		for(int i = 0; i < 10; i++){
 			topWords.add(tempTop.get(i));

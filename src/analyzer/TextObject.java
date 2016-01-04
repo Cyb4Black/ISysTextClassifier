@@ -1,5 +1,11 @@
 package analyzer;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -58,11 +64,13 @@ public class TextObject {
 		}
 	}
 	
-	public void addType(String dummy) {
+	public void addType(String dummy, double dummyVal) {
 		if(typeCount.containsKey(dummy)){
-			typeCount.put(dummy, typeCount.get(dummy) + 1);
+			typeCount.put(dummy, typeCount.get(dummy) + dummyVal);
+//			System.out.println("YES");
 		}else{
-			typeCount.put(dummy, 1.0);
+			typeCount.put(dummy, dummyVal);
+//			System.out.println("NO");
 		}
 	}
 
@@ -74,22 +82,44 @@ public class TextObject {
 		this.textSize = textSize;
 	}
 
-	public LinkedList<Map.Entry<String, Double>> getTopWords() {
-		if(topWords == null){
-			setTopWords();
-		}
-		return topWords;
-	}
-
-	public void setTopWords() {
-		topWords = new LinkedList<Map.Entry<String, Double>>();
-		LinkedList<Map.Entry<String, Double>> tempTop = new LinkedList<Map.Entry<String, Double>>();
-		tempTop.addAll(this.wordCount.entrySet());
-		tempTop.sort(new WordMapComp());
-		for(int i = 0; i < 10; i++){
-			topWords.add(tempTop.get(i));
-		}
-	}
+//	public LinkedList<Map.Entry<String, Double>> getTopWords() {
+//		if(topWords == null){
+//			setTopWords();
+//		}
+//		return topWords;
+//	}
+//
+//	public void setTopWords() {
+//		topWords = new LinkedList<Map.Entry<String, Double>>();
+//		LinkedList<Map.Entry<String, Double>> tempTop = new LinkedList<Map.Entry<String, Double>>();
+//		tempTop.addAll(this.wordCount.entrySet());
+//		LinkedList<String> blacklist = new LinkedList<String>();
+//		
+//		try {
+//			InputStream is = new FileInputStream("topWordsBlackList.txt");
+//			InputStreamReader isr = new InputStreamReader(is);
+//			BufferedReader reader = new BufferedReader(isr);
+//			String line = "";
+//			while(((line = reader.readLine()) != null)){
+//				blacklist.add(line);
+//			}
+//			reader.close();
+//			isr.close();
+//			is.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		
+//		for(Map.Entry<String, Double> ent : tempTop){
+//			if(blacklist.contains(ent.getKey())){
+//				tempTop.remove(ent);
+//			}
+//		}
+//		tempTop.sort(new WordMapComp());
+//		for(int i = 0; i < 10; i++){
+//			topWords.add(tempTop.get(i));
+//		}
+//	}
 	
 
 }

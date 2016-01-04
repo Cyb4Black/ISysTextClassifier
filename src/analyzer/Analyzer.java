@@ -9,7 +9,7 @@ public class Analyzer {
 	private String dictPath = "dicts/";
 	private String sourcePath = "textSources/";
 	private String trainingPath = "Training/";
-	private String guessingPath = "Test/";
+	private String guessingPath = "Test2/";
 	
 	private List<DictType> wordTypes;
 	private HashMap<String, TextClass> textClasses;
@@ -42,7 +42,7 @@ public class Analyzer {
 		for(String w : in.getWordCount().keySet()){
 			for(DictType dt : wordTypes){
 				if(dt.getContent().contains(w)){
-					in.addType(dt.getName());
+					in.addType(dt.getName(), in.getWordCount().get(w));
 					break;
 				}
 			}
@@ -68,6 +68,7 @@ public class Analyzer {
 		double minDiff = 100;
 		for(TextClass TC : this.textClasses.values()){
 			double tempDiff = 0;
+			
 			for(String type : in.getTypeCount().keySet()){
 				tempDiff += ((100/TC.getAverageTypeCount().get(type)) * 
 						Math.abs(TC.getAverageTypeCount().get(type) - 

@@ -15,7 +15,6 @@ public class TextParser {
 	
 	public TextObject parse(File f){
 		TextObject ret = new TextObject(f.getName());
-		
 		try {
 			InputStream is = new FileInputStream(f.getAbsoluteFile());
 			InputStreamReader isr = new InputStreamReader(is, Charset.forName("Windows-1252"));
@@ -27,7 +26,7 @@ public class TextParser {
 					if(Character.isLetter(c) /*|| alphaSpec.indexOf(c) != -1*/){
 						dummy += c;
 					}else if(dummy != ""){
-						ret.addWord(dummy);
+						ret.addWord(dummy.toLowerCase());
 						dummy = "";
 					}
 					if(punctuations.indexOf(c) != -1){
