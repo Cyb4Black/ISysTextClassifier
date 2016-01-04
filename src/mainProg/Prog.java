@@ -13,12 +13,12 @@ public class Prog {
 			System.out.println(">>>>>" + TC.getName() + "\n");
 			System.out.println("--------------------------------\n");
 			System.out.println(TC);
-			System.out.println("--------------------------------\n");
-			System.out.println(TC.getTopWords());
+//			System.out.println("--------------------------------\n");
+//			System.out.println(TC.getTopWords());
 			System.out.println("----------------------------------------------------------------\n");
 		}
 		
-		analyzer.startGuessing();
+//		analyzer.startGuessing();
 
 	}
 	

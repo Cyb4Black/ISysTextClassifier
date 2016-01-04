@@ -72,7 +72,7 @@ public class Analyzer {
 			for(String type : in.getTypeCount().keySet()){
 				tempDiff += ((100/TC.getAverageTypeCount().get(type)) * 
 						Math.abs(TC.getAverageTypeCount().get(type) - 
-								in.getTypeCount().get(type)));
+								(in.getTypeCount().get(type) / in.getTotalWords() * 1000)));
 			}
 			tempDiff /= in.getTypeCount().keySet().size();
 			if(tempDiff < minDiff){

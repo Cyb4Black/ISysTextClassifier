@@ -17,6 +17,8 @@ public class TextClass {
 	private int textCount;
 	private String name;
 	private LinkedList<Map.Entry<String, Double>> topWords;
+	private String punctuations = ".,;:?!»„-";
+	
 	public TextClass(String n){
 		name = n;
 		textCount = 0;
@@ -35,10 +37,20 @@ public class TextClass {
 		return ret;
 	}
 	
+	public double getTotalWords(){
+		double ret = 0;
+		for(String key : wordCount.keySet()){
+			if(!punctuations.contains(key)){
+				ret += wordCount.get(key);
+			}
+		}
+		return ret;
+	}
+	
 	public HashMap<String, Double> getAverageTypeCount() {
 		HashMap<String, Double> ret = new HashMap<String, Double>();
 		for(String key : typeCount.keySet()){
-			ret.put(key, (typeCount.get(key) / textCount));
+			ret.put(key, (typeCount.get(key) / getTotalWords() * 1000));
 		}
 		return ret;
 	}

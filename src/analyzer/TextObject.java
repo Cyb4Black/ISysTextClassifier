@@ -1,11 +1,5 @@
 package analyzer;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -13,10 +7,12 @@ import java.util.Map;
 public class TextObject {
 	private HashMap<String, Double> wordCount;
 	private HashMap<String, Double> typeCount;
-	private LinkedList<Map.Entry<String, Double>> topWords;
+//	private LinkedList<Map.Entry<String, Double>> topWords;
 	private String name;
 	private double myVocabVal;
 	private double textSize;
+	
+	private String punctuations = ".,;:?!»„-";
 	
 	public double getMyVocabVal() {
 		return myVocabVal;
@@ -62,6 +58,16 @@ public class TextObject {
 		}else{
 			wordCount.put(dummy, 1.0);
 		}
+	}
+	
+	public double getTotalWords(){
+		double ret = 0;
+		for(String key : wordCount.keySet()){
+			if(!punctuations.contains(key)){
+				ret += wordCount.get(key);
+			}
+		}
+		return ret;
 	}
 	
 	public void addType(String dummy, double dummyVal) {
