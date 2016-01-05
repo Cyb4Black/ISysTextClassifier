@@ -9,7 +9,7 @@ public class Analyzer {
 	private String dictPath = "dicts/";
 	private String sourcePath = "textSources/";
 	private String trainingPath = "Training/";
-	private String guessingPath = "Test2/";
+	private String guessingPath = "Test/";
 	
 	private List<DictType> wordTypes;
 	private HashMap<String, TextClass> textClasses;
