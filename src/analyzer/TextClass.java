@@ -1,42 +1,73 @@
 package analyzer;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.Map;
 
+/**
+ * TextClass-class that represents one text-class found in source-directory
+ * Holds information about word-counts and TypeObjects that represent the word-types (dict-types) counted for classification
+ * 
+ * @author Hex-3-En aka. Patrick Willnow & Marcel Selle
+ * @version FINAL RELEASE
+ *
+ */
 public class TextClass {
-	private HashMap<String, Double> wordCount;
-	private HashMap<String, Double> typeCount;
-	private double vocabValSum;
-	private double textSizeSum, textSizeMax, textSizeMin;
-	private int textCount;
-	private String name;
-	private LinkedList<Map.Entry<String, Double>> topWords;
-	private String punctuations = ".,;:?!Â»â€ž-";
 	
-	public TextClass(String n){
+	/**
+	 * HashMap containing the overall vocabulary of trained texts and each words count 
+	 */
+	private HashMap<String, Double> wordCount;
+	
+	/**
+	 * HashMap containing all types found in trained texts as TypeObjects
+	 */
+	private HashMap<String, TypeObject> typeCount;
+	
+	/**
+	 * doubles holding the biggest, smallest and overall(sum of all texts) textsize (count of words per text)
+	 */
+	private double textSizeSum, textSizeMax, textSizeMin;
+	
+	/**
+	 * number of texts trained
+	 */
+	private int textCount;
+	
+	/**
+	 * name of this text-type (e.g. "Filme" or "Nachrichten")
+	 */
+	private String name;
+	
+	/**
+	 * Hardcoded String containing elements to ignore in list when calculating text-size
+	 */
+	private String punctuations = ".,;:?!»„-–()[]{}";
+	
+	/**
+	 * Constructor of class, initializing all fields
+	 * 
+	 * @param n name to set for this class, taken from foldername of text-class
+	 * @param inList initial list of found dict-types in source-folder,
+	 * holding initial empty TypeObjects
+	 */
+	public TextClass(String n, LinkedList<DictType> inList){
 		name = n;
 		textCount = 0;
-		vocabValSum = 0;
 		textSizeSum = 0;
 		textSizeMin = 99999;
 		textSizeMax = 0;
 		wordCount = new HashMap<String, Double>();
-		typeCount = new HashMap<String, Double>();
-	}
-	public HashMap<String, Double> getAverageWordCount() {
-		HashMap<String, Double> ret = new HashMap<String, Double>();
-		for(String key : wordCount.keySet()){
-			ret.put(key, (wordCount.get(key) / textCount));
+		typeCount = new HashMap<String, TypeObject>();
+		for(DictType dt : inList){
+			typeCount.put(dt.getName(), new TypeObject(dt.getName()));
 		}
-		return ret;
 	}
 	
+	/**
+	 * method to calculate the total words in this text-class
+	 * 
+	 * @return total count of words as double
+	 */
 	public double getTotalWords(){
 		double ret = 0;
 		for(String key : wordCount.keySet()){
@@ -47,30 +78,43 @@ public class TextClass {
 		return ret;
 	}
 	
-	public HashMap<String, Double> getAverageTypeCount() {
-		HashMap<String, Double> ret = new HashMap<String, Double>();
-		for(String key : typeCount.keySet()){
-			ret.put(key, (typeCount.get(key) / getTotalWords() * 1000));
-		}
-		return ret;
+	/**
+	 * getter method for TypeCounts
+	 * 
+	 * @return this typeCounts as HashMap
+	 */
+	public HashMap<String, TypeObject> getTypeCount(){
+		return this.typeCount;
 	}
 	
-	public double getAverageVocabVal(){
-		return this.vocabValSum / textCount;
-	}
-	
+	/**
+	 * method to calculate the average size of all text learned
+	 * 
+	 * @return average text-size as double
+	 */
 	public double getAverageTextSize(){
 		return this.textSizeSum / textCount;
 	}
 	
+	/**
+	 * method to add a text in training-phase,
+	 * calling sub-methods used to learn different values
+	 * 
+	 * @param to TextObject representing the Text to learn
+	 */
 	public void addText(TextObject to){
 		addWordCount(to.getWordCount());
-		addTypeCount(to.getTypeCount());
-		addVocabVal(to.getMyVocabVal());
-		addTextSize(to.getTextSize());
+		addTypeCount(to);
+		addTextSize(to.getTotalWords());
 		textCount++;
 	}
 	
+	/**
+	 * sub-method of learning-process,
+	 * adding the text-size
+	 * 
+	 * @param size text-size of text to learn
+	 */
 	private void addTextSize(double size){
 		textSizeSum += size;
 		if(size > textSizeMax){
@@ -80,10 +124,12 @@ public class TextClass {
 		}
 	}
 	
-	private void addVocabVal(double val){
-		this.vocabValSum += val;
-	}
-	
+	/**
+	 * sub-method of learning-process,
+	 * adding the word-count of text to learn
+	 * 
+	 * @param newWordCount HasMap of word-counts to learn
+	 */
 	public void addWordCount(HashMap<String, Double> newWordCount) {
 		for(String key : newWordCount.keySet()){
 			if(wordCount.containsKey(key)){
@@ -95,85 +141,44 @@ public class TextClass {
 		}
 	}
 	
-	public void addTypeCount(HashMap<String, Double> newTypeCount) {
-//		System.out.println(newTypeCount);
-		for(String key : newTypeCount.keySet()){
-			if(typeCount.containsKey(key)){
-				double newVal = typeCount.get(key) + newTypeCount.get(key);
-//				System.out.println(newVal);
-				typeCount.put(key, newVal);
+	/**
+	 * sub-method of learning-process,
+	 * adding the type-count of text to learn
+	 * @param to TextObject to learn the type-counts from
+	 */
+	public void addTypeCount(TextObject to) {
+		HashMap<String, Double> newTypeCount = to.getTypeCount();
+		for(String key : this.typeCount.keySet()){
+			if(newTypeCount.get(key) == null){
+				this.typeCount.get(key).addVal(0);
 			}else{
-				typeCount.put(key, newTypeCount.get(key));
+				this.typeCount.get(key).addVal(newTypeCount.get(key)/to.getTotalWords());
 			}
 		}
 	}
 	
+	/**
+	 * getter-method of this classes name
+	 * 
+	 * @return this TextClasses name as string
+	 */
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
 	
+	/**
+	 * method for returning string-representation
+	 * 
+	 * @see java.lang.Object#toString()
+	 * @return smallest, average and biggest text-size (number of words)
+	 */
 	public String toString(){
-		HashMap<String, Double> dummyMap;
 		String ret = "";
 		ret += "VOCABULAR Values\n";
 		ret += "--------------------------------\n";
 		ret += this.textSizeMin + "\n";
 		ret += this.getAverageTextSize() + "\n";
 		ret += this.textSizeMax + "\n";
-		ret += this.getAverageVocabVal() + "\n";
-//		ret += "WORDS AVERAGE\n";
-//		ret += "--------------------------------\n";
-//		dummyMap = this.getAverageWordCount();
-//		for(String k : dummyMap.keySet()){
-//			ret += k + ":\t\t" + dummyMap.get(k) + "\n";
-//		}
-		ret += "TYPES AVERAGE\n";
-		ret += "--------------------------------\n";
-		dummyMap = this.getAverageTypeCount();
-		for(String k : dummyMap.keySet()){
-			ret += k + ":\t\t" + dummyMap.get(k) + "\n";
-		}
 		return ret;
-	}
-	
-	public LinkedList<Map.Entry<String, Double>> getTopWords() {
-		if(topWords == null){
-			setTopWords();
-		}
-		return topWords;
-	}
-
-	public void setTopWords() {
-		topWords = new LinkedList<Map.Entry<String, Double>>();
-		LinkedList<Map.Entry<String, Double>> tempTop = new LinkedList<Map.Entry<String, Double>>();
-		LinkedList<String> blacklist = new LinkedList<String>();
-		
-		try {
-			InputStream is = new FileInputStream("C:/Users/Hex-3-En/offlineWorkspaces/offline WS ISys/ISysTextClassifier/src/topWordsBlackList.txt");
-			InputStreamReader isr = new InputStreamReader(is);
-			BufferedReader reader = new BufferedReader(isr);
-			String line = "";
-			while(((line = reader.readLine()) != null)){
-				blacklist.add(line);
-			}
-			reader.close();
-			isr.close();
-			is.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		for(Map.Entry<String, Double> ent : wordCount.entrySet()){
-			if(!blacklist.contains(ent.getKey())){
-				tempTop.add(ent);
-			}
-		}
-		tempTop.sort(new WordMapComp());
-		for(int i = 0; i < 10; i++){
-			topWords.add(tempTop.get(i));
-		}
 	}
 }

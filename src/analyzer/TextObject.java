@@ -1,57 +1,72 @@
 package analyzer;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
 
+/**
+ * TextObject-class representing a Text after parsing.
+ * Used in training and analyzing
+ * 
+ * @author Hex-3-En aka. Patrick Willnow & Marcel Selle
+ * @version FINAL RELEASE
+ */
 public class TextObject {
+	
+	/**
+	 * HashMap containing the vocabulary and the per-word-count
+	 */
 	private HashMap<String, Double> wordCount;
+	
+	/**
+	 * HashMap containing type-counts found for this text
+	 */
 	private HashMap<String, Double> typeCount;
-//	private LinkedList<Map.Entry<String, Double>> topWords;
+	
+	/**
+	 * String containing name of the text-file (actually unused)
+	 */
+	@SuppressWarnings("unused")
 	private String name;
-	private double myVocabVal;
-	private double textSize;
 	
-	private String punctuations = ".,;:?!Â»â€ž-";
-	
-	public double getMyVocabVal() {
-		return myVocabVal;
-	}
+	/**
+	 * Hard-coded String of signs to ignore for calculating word-count
+	 */
+	private String punctuations = ".,;:?!»„-–()[]{}";
 
-	public void setMyVocabVal(double myVocabVal) {
-		this.myVocabVal = myVocabVal;
-	}
-
+	/**
+	 * Constructor initializing fields
+	 * 
+	 * @param n name of text as string
+	 */
 	public TextObject(String n){
 		name = n;
 		wordCount = new HashMap<String, Double>();
 		typeCount = new HashMap<String, Double>();
 	}
 
+	/**
+	 * getter-method of word-count-map
+	 * 
+	 * @return word-counts as HashMap
+	 */
 	public HashMap<String, Double> getWordCount() {
 		return wordCount;
 	}
 
-	public void setWordCount(HashMap<String, Double> wordCount) {
-		this.wordCount = wordCount;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
+	/**
+	 * getter-method of type-counts
+	 * 
+	 * @return type-counts as HashMap
+	 */
 	public HashMap<String, Double> getTypeCount() {
 		return typeCount;
 	}
 
-	public void setTypeCount(HashMap<String, Double> typeCount) {
-		this.typeCount = typeCount;
-	}
-
+	/**
+	 * Method for adding a word to map or counting +1 if exists.
+	 * Called by parser
+	 * 
+	 * @param dummy word to add as string
+	 */
 	public void addWord(String dummy) {
 		if(wordCount.containsKey(dummy)){
 			wordCount.put(dummy, wordCount.get(dummy) + 1);
@@ -60,6 +75,11 @@ public class TextObject {
 		}
 	}
 	
+	/**
+	 * Method for calculating overall word-count from map
+	 * 
+	 * @return overall word-count of text as double
+	 */
 	public double getTotalWords(){
 		double ret = 0;
 		for(String key : wordCount.keySet()){
@@ -70,62 +90,17 @@ public class TextObject {
 		return ret;
 	}
 	
+	/**
+	 * method for adding a type-count or adding count-value if type exists
+	 * 
+	 * @param dummy type to add or raise value as string
+	 * @param dummyVal value to add as double
+	 */
 	public void addType(String dummy, double dummyVal) {
 		if(typeCount.containsKey(dummy)){
 			typeCount.put(dummy, typeCount.get(dummy) + dummyVal);
-//			System.out.println("YES");
 		}else{
 			typeCount.put(dummy, dummyVal);
-//			System.out.println("NO");
 		}
 	}
-
-	public double getTextSize() {
-		return textSize;
-	}
-
-	public void setTextSize(double textSize) {
-		this.textSize = textSize;
-	}
-
-//	public LinkedList<Map.Entry<String, Double>> getTopWords() {
-//		if(topWords == null){
-//			setTopWords();
-//		}
-//		return topWords;
-//	}
-//
-//	public void setTopWords() {
-//		topWords = new LinkedList<Map.Entry<String, Double>>();
-//		LinkedList<Map.Entry<String, Double>> tempTop = new LinkedList<Map.Entry<String, Double>>();
-//		tempTop.addAll(this.wordCount.entrySet());
-//		LinkedList<String> blacklist = new LinkedList<String>();
-//		
-//		try {
-//			InputStream is = new FileInputStream("topWordsBlackList.txt");
-//			InputStreamReader isr = new InputStreamReader(is);
-//			BufferedReader reader = new BufferedReader(isr);
-//			String line = "";
-//			while(((line = reader.readLine()) != null)){
-//				blacklist.add(line);
-//			}
-//			reader.close();
-//			isr.close();
-//			is.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		for(Map.Entry<String, Double> ent : tempTop){
-//			if(blacklist.contains(ent.getKey())){
-//				tempTop.remove(ent);
-//			}
-//		}
-//		tempTop.sort(new WordMapComp());
-//		for(int i = 0; i < 10; i++){
-//			topWords.add(tempTop.get(i));
-//		}
-//	}
-	
-
 }
